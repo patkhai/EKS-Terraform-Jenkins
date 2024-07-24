@@ -31,7 +31,7 @@ data "aws_iam_policy_document" "kms_policy" {
       "kms:ScheduleKeyDeletion",
       "kms:CancelKeyDeletion"
     ]
-    resources = ["*"]
+    resources = ["arn:aws:kms:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:key/*"]
   }
 
   statement {
@@ -48,7 +48,7 @@ data "aws_iam_policy_document" "kms_policy" {
       "kms:GenerateDataKey*",
       "kms:Describe*"
     ]
-    resources = ["*"]
+    resources = ["arn:aws:kms:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:key/*"]
     condition {
       test     = "ArnLike"
       variable = "kms:EncryptionContext:aws:logs:arn"
@@ -67,7 +67,7 @@ data "aws_iam_policy_document" "kms_policy" {
       "kms:Decrypt",
       "kms:GenerateDataKey"
     ]
-    resources = ["*"]
+    resources = ["arn:aws:kms:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:key/*"]
     condition {
       test     = "ArnLike"
       variable = "aws:SourceArn"
@@ -89,7 +89,7 @@ data "aws_iam_policy_document" "kms_policy" {
       "kms:GenerateDataKey*",
       "kms:DescribeKey"
     ]
-    resources = ["*"]
+    resources = ["arn:aws:kms:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:key/*"]
     condition {
       test     = "StringEquals"
       variable = "kms:CallerAccount"
