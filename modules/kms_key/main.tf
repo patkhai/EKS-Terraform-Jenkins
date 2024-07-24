@@ -35,17 +35,14 @@ data "aws_iam_policy_document" "kms_policy" {
   }
 
   statement {
-    sid    = "Allow CloudWatch Logs and SQS"
+    sid    = "Allow CloudWatch Logs"
     effect = "Allow"
     principals {
-      type = "Service"
-      identifiers = [
-        "logs.${data.aws_region.current.name}.amazonaws.com",
-        "sqs.amazonaws.com"
-      ]
+      type        = "Service"
+      identifiers = ["logs.${data.aws_region.current.name}.amazonaws.com"]
     }
     actions = [
-      "kms:Encrypt*",
+      "kms:Encrypt",
       "kms:Decrypt",
       "kms:ReEncrypt*",
       "kms:GenerateDataKey*",
@@ -57,40 +54,24 @@ data "aws_iam_policy_document" "kms_policy" {
       variable = "kms:EncryptionContext:aws:logs:arn"
       values   = ["arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:*"]
     }
+  }
+
+  statement {
+    sid    = "Allow SQS to use the key"
+    effect = "Allow"
+    principals {
+      type        = "Service"
+      identifiers = ["sqs.amazonaws.com"]
+    }
+    actions = [
+      "kms:Decrypt",
+      "kms:GenerateDataKey"
+    ]
+    resources = ["arn:aws:kms:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:key/*"]
     condition {
       test     = "ArnLike"
       variable = "aws:SourceArn"
       values   = ["arn:aws:sqs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:*"]
-    }
-  }
-
-  statement {
-    sid    = "Allow key usage for encrypted resources"
-    effect = "Allow"
-    principals {
-      type        = "AWS"
-      identifiers = ["*"]
-    }
-    actions = [
-      "kms:Encrypt",
-      "kms:Decrypt",
-      "kms:ReEncrypt*",
-      "kms:GenerateDataKey*",
-      "kms:DescribeKey"
-    ]
-    resources = ["arn:aws:kms:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:key/*"]
-    condition {
-      test     = "StringEquals"
-      variable = "kms:CallerAccount"
-      values   = [data.aws_caller_identity.current.account_id]
-    }
-    condition {
-      test     = "StringLike"
-      variable = "kms:ViaService"
-      values   = [
-        "sqs.${data.aws_region.current.name}.amazonaws.com",
-        "logs.${data.aws_region.current.name}.amazonaws.com"
-      ]
     }
   }
 }
