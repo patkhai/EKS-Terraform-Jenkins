@@ -45,7 +45,7 @@ data "aws_iam_policy_document" "kms_policy" {
       ]
     }
     actions = [
-      "kms:Encrypt",
+      "kms:Encrypt*",
       "kms:Decrypt",
       "kms:ReEncrypt*",
       "kms:GenerateDataKey*",
