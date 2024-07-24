@@ -49,6 +49,12 @@ variable "fifo_queue" {
   default     = false
 }
 
+variable "kms_master_key_id" {
+  description = "The ID of an AWS-managed customer master key (CMK) for Amazon SQS or a custom CMK"
+  type        = string
+  default     = null
+}
+
 variable "tags" {
   description = "A map of tags to assign to the queue"
   type        = map(string)

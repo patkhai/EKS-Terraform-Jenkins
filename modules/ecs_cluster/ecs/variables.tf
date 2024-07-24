@@ -11,13 +11,19 @@ variable "log_group_name" {
 variable "log_retention_days" {
   description = "Specifies the number of days you want to retain log events in the specified log group"
   type        = number
-  default     = 5
+  default     = 0
 }
 
 variable "enable_container_insights" {
   description = "Value to assign to the setting for container insights"
   type        = bool
   default     = false
+}
+
+variable "kms_key_id" {
+  description = "The ARN of the KMS Key to use when encrypting log data"
+  type        = string
+  default     = null
 }
 
 variable "tags" {
