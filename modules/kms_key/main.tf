@@ -35,11 +35,14 @@ data "aws_iam_policy_document" "kms_policy" {
   }
 
   statement {
-    sid    = "Allow CloudWatch Logs"
+    sid    = "Allow CloudWatch Logs and SQS"
     effect = "Allow"
     principals {
-      type        = "Service"
-      identifiers = ["logs.${data.aws_region.current.name}.amazonaws.com"]
+      type = "Service"
+      identifiers = [
+        "logs.${data.aws_region.current.name}.amazonaws.com",
+        "sqs.amazonaws.com"
+      ]
     }
     actions = [
       "kms:Encrypt",
@@ -54,20 +57,6 @@ data "aws_iam_policy_document" "kms_policy" {
       variable = "kms:EncryptionContext:aws:logs:arn"
       values   = ["arn:aws:logs:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:*"]
     }
-  }
-
-  statement {
-    sid    = "Allow SQS to use the key"
-    effect = "Allow"
-    principals {
-      type        = "Service"
-      identifiers = ["sqs.amazonaws.com"]
-    }
-    actions = [
-      "kms:Decrypt",
-      "kms:GenerateDataKey"
-    ]
-    resources = ["arn:aws:kms:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:key/*"]
     condition {
       test     = "ArnLike"
       variable = "aws:SourceArn"
